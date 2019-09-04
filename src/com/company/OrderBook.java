@@ -1,12 +1,5 @@
 package com.company;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,35 +44,10 @@ public class OrderBook {
         }
     }
 
-    private class XmlOrderHandler extends DefaultHandler {
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            switch (qName) {
-                case "AddOrder": {
-                    OrderBook.this.addOrder("SELL".equals(attributes.getValue("operation")),
-                            attributes.getValue("book"),
-                            new BigDecimal(attributes.getValue("price").trim()),
-                            Integer.parseInt(attributes.getValue("volume")),
-                            Integer.parseInt(attributes.getValue("orderId")));
-                    break;
-                }
-                case "DeleteOrder": {
-                    OrderBook.this.deleteOrder(attributes.getValue("book"),
-                            Integer.parseInt(attributes.getValue("orderId")));
-                    break;
-                }
-            }
-        }
-    }
 
     public OrderBook() {
         booksByName = new HashMap<>();
         ordersById = new HashMap<>();
-    }
-
-    public OrderBook(String pathXml) throws ParserConfigurationException, SAXException, IOException {
-        this();
-        SAXParserFactory.newInstance().newSAXParser().parse(pathXml, new XmlOrderHandler());
     }
 
     public void addOrder(boolean isAsk, String bookName, BigDecimal price, int volume, int orderId) {
